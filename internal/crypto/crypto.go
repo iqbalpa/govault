@@ -9,6 +9,8 @@ import (
 	"os"
 
 	_ "govault/internal/utils"
+
+	"golang.org/x/crypto/scrypt"
 )
 
 var secretKey string
@@ -60,10 +62,17 @@ func DecryptAES(ciphertext string) (string, error) {
 	return string(plaintext), nil
 }
 
-func DeriveKey(password string, salt int) (string, error) {
-	return "", nil
+func DeriveKey(masterPass string) (string, error) {
+	salt := GenerateRandomSalt()
+	key, err := scrypt.Key([]byte(masterPass), salt, 32768, 8, 1, 256)
+	if err != nil {
+		panic(err)
+	}
+	return base64.StdEncoding.EncodeToString(key), nil
 }
 
-func GenerateRandomSalt() int {
-	return 1
+func GenerateRandomSalt() []byte {
+	salt := make([]byte, 16)
+	rand.Read(salt)
+	return salt
 }

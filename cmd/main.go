@@ -12,4 +12,6 @@ func main() {
 	fmt.Println(a)
 	b, _ := crypto.DecryptAES(a)
 	fmt.Println(b)
+	c, _ := crypto.DeriveKey("iqbalpahlevi")
+	fmt.Println(c)
 }
