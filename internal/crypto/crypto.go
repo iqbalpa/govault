@@ -4,7 +4,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"encoding/base64"
 	"fmt"
 
 	_ "govault/internal/utils"
@@ -12,11 +11,7 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-func createAesgcm(keyStr string) cipher.AEAD {
-	key, err := base64.StdEncoding.DecodeString(keyStr)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+func createAesgcm(key []byte) cipher.AEAD {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err.Error())
@@ -29,7 +24,7 @@ func createAesgcm(keyStr string) cipher.AEAD {
 }
 
 // EncryptAES encrypts a string using AES-GCM.
-func EncryptAES(text, key string) ([]byte, error) {
+func EncryptAES(text string, key []byte) ([]byte, error) {
 	nonce := make([]byte, 12)
 	rand.Read(nonce)
 
@@ -43,7 +38,7 @@ func EncryptAES(text, key string) ([]byte, error) {
 }
 
 // DecryptAES decrypts a string encrypted with AES-GCM.
-func DecryptAES(ciphertext []byte, key string) (string, error) {
+func DecryptAES(ciphertext, key []byte) (string, error) {
 	nonce := ciphertext[:12]
 	cipher := ciphertext[12:]
 
@@ -58,12 +53,12 @@ func DecryptAES(ciphertext []byte, key string) (string, error) {
 }
 
 // DeriveKey derives a key from a master password using scrypt.
-func DeriveKey(masterPass string, salt []byte) (string, error) {
+func DeriveKey(masterPass string, salt []byte) ([]byte, error) {
 	key, err := scrypt.Key([]byte(masterPass), salt, 32768, 8, 1, 32)
 	if err != nil {
 		panic(err)
 	}
-	return base64.StdEncoding.EncodeToString(key), nil
+	return key, nil
 }
 
 // GenerateRandomSalt generates a random salt for key derivation.

@@ -26,3 +26,9 @@ func (sr *SecretRepository) GetAllSecrets() ([]model.Secret, error) {
 	sr.db.Select(IdKey, NameKey).Find(&secrets)
 	return secrets, nil
 }
+
+func (sr *SecretRepository) GetSecretById(id string) (model.Secret, error) {
+	var secret model.Secret
+	sr.db.Where("id = ?", id).First(&secret)
+	return secret, nil
+}
