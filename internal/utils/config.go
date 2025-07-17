@@ -7,9 +7,11 @@ import (
 )
 
 func init() {
+	fmt.Println("Loading .env file...")
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println("Failed to load the .env file:", err)
+		fmt.Println("failed to load .env file")
+		return
 	}
-	fmt.Println("Sucessfully loaded .env")
+	fmt.Println("Loaded .env successfully!")
 }
