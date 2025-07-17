@@ -33,6 +33,7 @@ func init() {
 	}
 }
 
+// EncryptAES encrypts a string using AES-GCM.
 func EncryptAES(text string) (string, error) {
 	nonce := make([]byte, 12)
 	rand.Read(nonce)
@@ -45,6 +46,7 @@ func EncryptAES(text string) (string, error) {
 	return res, nil
 }
 
+// DecryptAES decrypts a string encrypted with AES-GCM.
 func DecryptAES(ciphertext string) (string, error) {
 	data, err := base64.StdEncoding.DecodeString(ciphertext)
 	if err != nil {
@@ -62,6 +64,7 @@ func DecryptAES(ciphertext string) (string, error) {
 	return string(plaintext), nil
 }
 
+// DeriveKey derives a key from a master password using scrypt.
 func DeriveKey(masterPass string) (string, error) {
 	salt := GenerateRandomSalt()
 	key, err := scrypt.Key([]byte(masterPass), salt, 32768, 8, 1, 256)
@@ -71,6 +74,7 @@ func DeriveKey(masterPass string) (string, error) {
 	return base64.StdEncoding.EncodeToString(key), nil
 }
 
+// GenerateRandomSalt generates a random salt for key derivation.
 func GenerateRandomSalt() []byte {
 	salt := make([]byte, 16)
 	rand.Read(salt)
