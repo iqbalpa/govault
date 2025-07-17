@@ -6,37 +6,34 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"os"
 
 	_ "govault/internal/utils"
 
 	"golang.org/x/crypto/scrypt"
 )
 
-var secretKey string
-var key []byte
-var aesgcm cipher.AEAD
-
-func init() {
-	secretKey = os.Getenv("SECRET_KEY")
-	key = []byte(secretKey)
-	if len(key) != 32 {
-		panic("Key length must be 32")
+func createAesgcm(keyStr string) cipher.AEAD {
+	key, err := base64.StdEncoding.DecodeString(keyStr)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err.Error())
 	}
-	aesgcm, err = cipher.NewGCM(block)
+	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
 		panic(err.Error())
 	}
+	return aesgcm
 }
 
 // EncryptAES encrypts a string using AES-GCM.
-func EncryptAES(text string) (string, error) {
+func EncryptAES(text, key string) (string, error) {
 	nonce := make([]byte, 12)
 	rand.Read(nonce)
+
+	aesgcm := createAesgcm(key)
 
 	plaintext := []byte(text)
 	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
@@ -47,7 +44,7 @@ func EncryptAES(text string) (string, error) {
 }
 
 // DecryptAES decrypts a string encrypted with AES-GCM.
-func DecryptAES(ciphertext string) (string, error) {
+func DecryptAES(ciphertext, key string) (string, error) {
 	data, err := base64.StdEncoding.DecodeString(ciphertext)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -55,6 +52,8 @@ func DecryptAES(ciphertext string) (string, error) {
 
 	nonce := data[:12]
 	cipher := data[12:]
+
+	aesgcm := createAesgcm(key)
 
 	plaintext, err := aesgcm.Open(nil, nonce, cipher, nil)
 	if err != nil {
@@ -65,9 +64,8 @@ func DecryptAES(ciphertext string) (string, error) {
 }
 
 // DeriveKey derives a key from a master password using scrypt.
-func DeriveKey(masterPass string) (string, error) {
-	salt := GenerateRandomSalt()
-	key, err := scrypt.Key([]byte(masterPass), salt, 32768, 8, 1, 256)
+func DeriveKey(masterPass string, salt []byte) (string, error) {
+	key, err := scrypt.Key([]byte(masterPass), salt, 32768, 8, 1, 32)
 	if err != nil {
 		panic(err)
 	}
