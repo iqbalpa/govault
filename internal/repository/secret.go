@@ -32,3 +32,15 @@ func (sr *SecretRepository) GetSecretById(id string) (model.Secret, error) {
 	sr.db.Where("id = ?", id).First(&secret)
 	return secret, nil
 }
+
+func (sr *SecretRepository) CreateSecret(name, username, note string, ciphertext, derivedKey []byte) (model.Secret, error) {
+	secret := model.Secret{
+		Name:       name,
+		Username:   username,
+		Note:       note,
+		Ciphertext: ciphertext,
+		DerivedKey: derivedKey,
+	}
+	sr.db.Create(&secret)
+	return secret, nil
+}

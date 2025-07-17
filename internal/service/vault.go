@@ -36,3 +36,10 @@ func (vs *VaultService) GetSecretById(id string) (model.SecretInVault, error) {
 	}
 	return res, nil
 }
+
+// Create a new secret
+func (vs *VaultService) CreateSecret(name, username, password, note string, derivedKey []byte) (model.Secret, error) {
+	ciphertext, _ := crypto.EncryptAES(password, derivedKey)
+	secret, _ := vs.r.CreateSecret(name, username, note, ciphertext, derivedKey)
+	return secret, nil
+}
