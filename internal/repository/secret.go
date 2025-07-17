@@ -44,3 +44,10 @@ func (sr *SecretRepository) CreateSecret(name, username, note string, ciphertext
 	sr.db.Create(&secret)
 	return secret, nil
 }
+
+func (sr *SecretRepository) DeleteSecretById(id string) (model.Secret, error) {
+	var secret model.Secret
+	sr.db.Where("id = ?", id).First(&secret)
+	sr.db.Delete(&secret)
+	return secret, nil
+}

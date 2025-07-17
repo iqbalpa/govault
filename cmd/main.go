@@ -32,4 +32,9 @@ func main() {
 
 	res2, _ := vs.GetAllSecrets()
 	fmt.Println(res2)
+
+	vs.DeleteSecretById(id)
+
+	res3, _ := vs.GetAllSecrets()
+	fmt.Println(res3)
 }

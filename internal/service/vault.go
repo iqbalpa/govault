@@ -43,3 +43,9 @@ func (vs *VaultService) CreateSecret(name, username, password, note string, deri
 	secret, _ := vs.r.CreateSecret(name, username, note, ciphertext, derivedKey)
 	return secret, nil
 }
+
+// Delete a secret
+func (vs *VaultService) DeleteSecretById(id string) (model.Secret, error) {
+	secret, _ := vs.r.DeleteSecretById(id)
+	return secret, nil
+}
