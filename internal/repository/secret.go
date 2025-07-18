@@ -33,13 +33,13 @@ func (sr *SecretRepository) GetSecretById(id string) (model.Secret, error) {
 	return secret, nil
 }
 
-func (sr *SecretRepository) CreateSecret(name, username, note string, ciphertext, derivedKey []byte) (model.Secret, error) {
+func (sr *SecretRepository) CreateSecret(name, username, note string, ciphertext, salt []byte) (model.Secret, error) {
 	secret := model.Secret{
 		Name:       name,
 		Username:   username,
 		Note:       note,
 		Ciphertext: ciphertext,
-		DerivedKey: derivedKey,
+		Salt:       salt,
 	}
 	sr.db.Create(&secret)
 	return secret, nil

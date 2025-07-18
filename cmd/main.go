@@ -14,7 +14,6 @@ func main() {
 
 	masterPass := "iqbalpahlevi"
 	salt := crypto.GenerateRandomSalt()
-	derivedKey, _ := crypto.DeriveKey(masterPass, salt)
 
 	sr := repository.New(db)
 	vs := service.New(*sr)
@@ -24,17 +23,15 @@ func main() {
 	password := "malang123"
 	note := "ini gmail dummy aja"
 
-	vs.CreateSecret(name, username, password, note, derivedKey)
+	s, _ := vs.CreateSecret(masterPass, name, username, password, note, salt)
+	fmt.Println("create secret:\n", s)
 
-	id := "734cb362-4340-4e77-8118-978cb6995c87"
-	res, _ := vs.GetSecretById(id)
-	fmt.Println(res)
+	id := s.ID
+	res, _ := vs.GetSecretById(masterPass, id)
+	fmt.Println("get by id:\n", res)
 
 	res2, _ := vs.GetAllSecrets()
-	fmt.Println(res2)
+	fmt.Println("get all:\n", res2)
 
 	vs.DeleteSecretById(id)
-
-	res3, _ := vs.GetAllSecrets()
-	fmt.Println(res3)
 }

@@ -7,7 +7,7 @@ type Secret struct {
 	Name       string `gorm:"unique"`
 	Username   string
 	Ciphertext []byte // AES-encrypted password
-	DerivedKey []byte // Derived key from master password
+	Salt       []byte // Salt to derived the master password
 	Note       string
 	CreatedAt  time.Time
 }

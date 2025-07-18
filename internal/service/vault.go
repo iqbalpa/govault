@@ -23,9 +23,9 @@ func (vs *VaultService) GetAllSecrets() ([]model.Secret, error) {
 }
 
 // Get secret with decrypted password
-func (vs *VaultService) GetSecretById(id string) (model.SecretInVault, error) {
+func (vs *VaultService) GetSecretById(masterPass, id string) (model.SecretInVault, error) {
 	secret, _ := vs.r.GetSecretById(id)
-	pass, _ := crypto.DecryptAES(secret.Ciphertext, secret.DerivedKey)
+	pass, _ := crypto.DecryptAES(masterPass, secret.Ciphertext, secret.Salt)
 	res := model.SecretInVault{
 		ID:        secret.ID,
 		Name:      secret.Name,
@@ -38,9 +38,9 @@ func (vs *VaultService) GetSecretById(id string) (model.SecretInVault, error) {
 }
 
 // Create a new secret
-func (vs *VaultService) CreateSecret(name, username, password, note string, derivedKey []byte) (model.Secret, error) {
-	ciphertext, _ := crypto.EncryptAES(password, derivedKey)
-	secret, _ := vs.r.CreateSecret(name, username, note, ciphertext, derivedKey)
+func (vs *VaultService) CreateSecret(masterPass, name, username, password, note string, salt []byte) (model.Secret, error) {
+	ciphertext, _ := crypto.EncryptAES(masterPass, password, salt)
+	secret, _ := vs.r.CreateSecret(name, username, note, ciphertext, salt)
 	return secret, nil
 }
 

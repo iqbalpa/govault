@@ -24,10 +24,11 @@ func createAesgcm(key []byte) cipher.AEAD {
 }
 
 // EncryptAES encrypts a string using AES-GCM.
-func EncryptAES(text string, key []byte) ([]byte, error) {
+func EncryptAES(masterPass, text string, salt []byte) ([]byte, error) {
 	nonce := make([]byte, 12)
 	rand.Read(nonce)
 
+	key, _ := DeriveKey(masterPass, salt)
 	aesgcm := createAesgcm(key)
 
 	plaintext := []byte(text)
@@ -38,15 +39,16 @@ func EncryptAES(text string, key []byte) ([]byte, error) {
 }
 
 // DecryptAES decrypts a string encrypted with AES-GCM.
-func DecryptAES(ciphertext, key []byte) (string, error) {
+func DecryptAES(masterPass string, ciphertext, salt []byte) (string, error) {
 	nonce := ciphertext[:12]
 	cipher := ciphertext[12:]
 
+	key, _ := DeriveKey(masterPass, salt)
 	aesgcm := createAesgcm(key)
 
 	plaintext, err := aesgcm.Open(nil, nonce, cipher, nil)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("Failed to decrypt the password:\n", err.Error())
 		return "", err
 	}
 	return string(plaintext), nil
