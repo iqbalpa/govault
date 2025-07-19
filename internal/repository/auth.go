@@ -24,6 +24,12 @@ func (ar *AuthRepository) InitMasterPass(hashedPass string) (model.Auth, error) 
 	return auth, nil
 }
 
+func (ar *AuthRepository) GetHashedMasterPass() (string, error) {
+	var auth model.Auth
+	ar.db.First(&auth)
+	return auth.HashedMasterPassword, nil
+}
+
 func (ar *AuthRepository) IsInitialized() bool {
 	var auth model.Auth
 	res := ar.db.First(&auth)
