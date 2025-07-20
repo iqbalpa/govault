@@ -39,21 +39,84 @@ These instructions will get you a copy of the project up and running on your loc
     *   Create a PostgreSQL database.
     *   Create a `.env` file in the root of the project by copying `.env.example`
 
-4.  **Run the application:**
+4.  **Build the binary (optional):**
+    You can build the binary to run the CLI directly.
+    ```sh
+    go build -o govault cmd/main.go
+    ```
+
+5.  **Run the application:**
     ```sh
     go run cmd/main.go
     ```
 
-## Usage (CLI - Coming Soon)
+## Usage (CLI)
 
-The following commands will be available in the CLI version of GoVault:
+GoVault provides a command-line interface (CLI) to manage your secrets.
 
-*   `govault init`: Initialize the vault with a master password.
-*   `govault login`: Log in to the vault.
-*   `govault create`: Create a new secret.
-*   `govault get <secret-name>`: Retrieve a secret.
-*   `govault list`: List all secrets.
-*   `govault delete <secret-name>`: Delete a secret.
+You can either run the application using `go run` or by building the binary.
+
+### Using `go run`
+
+#### `init`
+
+Initialize the vault with a master password. This is the first command you need to run.
+
+```sh
+go run cmd/main.go init --masterPass <your-master-password>
+```
+
+#### `add`
+
+Add a new secret to the vault.
+
+```sh
+go run cmd/main.go add --masterPass <your-master-password> --name <secret-name> --username <secret-username> --password <secret-password> --note <some-note>
+```
+
+#### `list`
+
+List all secrets in the vault.
+
+```sh
+go run cmd/main.go list
+```
+
+#### `delete`
+
+Delete a secret by its ID. You can get the ID from the `list` command.
+
+```sh
+go run cmd/main.go delete --id <secret-id>
+```
+
+### Using the built binary
+
+If you have built the binary, you can use it directly:
+
+#### `init`
+
+```sh
+./govault init --masterPass <your-master-password>
+```
+
+#### `add`
+
+```sh
+./govault add --masterPass <your-master-password> --name <secret-name> --username <secret-username> --password <secret-password> --note <some-note>
+```
+
+#### `list`
+
+```sh
+./govault list
+```
+
+#### `delete`
+
+```sh
+./govault delete --id <secret-id>
+```
 
 ## Tech Stack
 
