@@ -18,13 +18,19 @@ func New(r repository.SecretRepository) *VaultService {
 
 // List all available secrets (without decryption)
 func (vs *VaultService) GetAllSecrets() ([]model.Secret, error) {
-	secrets, _ := vs.r.GetAllSecrets()
+	secrets, err := vs.r.GetAllSecrets()
+	if err != nil {
+		return []model.Secret{}, err
+	}
 	return secrets, nil
 }
 
 // Get secret with decrypted password
 func (vs *VaultService) GetSecretById(masterPass, id string) (model.SecretInVault, error) {
-	secret, _ := vs.r.GetSecretById(id)
+	secret, err := vs.r.GetSecretById(id)
+	if err != nil {
+		return model.SecretInVault{}, err
+	}
 	pass, _ := crypto.DecryptAES(masterPass, secret.Ciphertext, secret.Salt)
 	res := model.SecretInVault{
 		ID:        secret.ID,
@@ -40,7 +46,10 @@ func (vs *VaultService) GetSecretById(masterPass, id string) (model.SecretInVaul
 // Create a new secret
 func (vs *VaultService) CreateSecret(masterPass, name, username, password, note string, salt []byte) (model.SecretInVault, error) {
 	ciphertext, _ := crypto.EncryptAES(masterPass, password, salt)
-	secret, _ := vs.r.CreateSecret(name, username, note, ciphertext, salt)
+	secret, err := vs.r.CreateSecret(name, username, note, ciphertext, salt)
+	if err != nil {
+		return model.SecretInVault{}, err
+	}
 	res := model.SecretInVault{
 		ID:        secret.ID,
 		Name:      secret.Name,
@@ -53,7 +62,10 @@ func (vs *VaultService) CreateSecret(masterPass, name, username, password, note 
 
 // Delete a secret
 func (vs *VaultService) DeleteSecretById(id string) (model.SecretInVault, error) {
-	secret, _ := vs.r.DeleteSecretById(id)
+	secret, err := vs.r.DeleteSecretById(id)
+	if err != nil {
+		return model.SecretInVault{}, err
+	}
 	res := model.SecretInVault{
 		ID:        secret.ID,
 		Name:      secret.Name,

@@ -76,6 +76,7 @@ var (
 			res, err := vaultSvc.GetAllSecrets()
 			if err != nil {
 				fmt.Println(err)
+				os.Exit(1)
 			}
 			fmt.Println(res)
 		},
@@ -96,6 +97,7 @@ var (
 			s, err := vaultSvc.GetSecretById(masterPass, id)
 			if err != nil {
 				fmt.Println("Failed to get secret")
+				os.Exit(1)
 			}
 			fmt.Println("Succesfully retrieve secret!\n", s)
 		},
@@ -117,6 +119,7 @@ var (
 			s, err := vaultSvc.CreateSecret(masterPass, name, username, password, note, salt)
 			if err != nil {
 				fmt.Println("Failed to add new secret")
+				os.Exit(1)
 			}
 			fmt.Println("Succesfully added new secret!\n", s)
 		},
@@ -137,6 +140,7 @@ var (
 			s, err := vaultSvc.DeleteSecretById(id)
 			if err != nil {
 				fmt.Println("Failed to delete secret")
+				os.Exit(1)
 			}
 			fmt.Println("Succesfully delete secret!\n", s)
 		},
