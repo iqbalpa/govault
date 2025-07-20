@@ -8,6 +8,7 @@ import (
 	"govault/internal/utils"
 	"os"
 
+	"github.com/k0kubun/pp/v3"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
 )
@@ -78,7 +79,7 @@ var (
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			fmt.Println(res)
+			utils.PPrint.Println(res)
 		},
 	}
 
@@ -99,7 +100,8 @@ var (
 				fmt.Println("Failed to get secret")
 				os.Exit(1)
 			}
-			fmt.Println("Succesfully retrieve secret!\n", s)
+			fmt.Println("Succesfully retrieve secret!")
+			pp.Println(s)
 		},
 	}
 
@@ -121,7 +123,8 @@ var (
 				fmt.Println("Failed to add new secret")
 				os.Exit(1)
 			}
-			fmt.Println("Succesfully added new secret!\n", s)
+			fmt.Println("Succesfully added new secret!")
+			utils.PPrint.Println(s)
 		},
 	}
 
@@ -142,7 +145,8 @@ var (
 				fmt.Println("Failed to delete secret")
 				os.Exit(1)
 			}
-			fmt.Println("Succesfully delete secret!\n", s)
+			fmt.Println("Succesfully delete secret!")
+			utils.PPrint.Println(s)
 		},
 	}
 )

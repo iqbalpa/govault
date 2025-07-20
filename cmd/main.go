@@ -2,11 +2,12 @@ package main
 
 import (
 	"govault/cli"
+	"govault/internal/utils"
 	"log"
 )
 
 func main() {
-	// cobra cli init
+	utils.InitPPrint()
 	if err := cli.Execute(); err != nil {
 		log.Fatal(err)
 	}

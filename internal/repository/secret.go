@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	IdKey   string = "id"
-	NameKey string = "name"
+	IdKey       string = "id"
+	NameKey     string = "name"
+	UsernameKey string = "username"
 )
 
 type SecretRepository struct {
@@ -23,7 +24,7 @@ func New(db *gorm.DB) *SecretRepository {
 
 func (sr *SecretRepository) GetAllSecrets() ([]model.Secret, error) {
 	var secrets []model.Secret
-	res := sr.db.Select(IdKey, NameKey).Find(&secrets)
+	res := sr.db.Select(IdKey, NameKey, UsernameKey).Find(&secrets)
 	if res.Error != nil {
 		return []model.Secret{}, res.Error
 	}
