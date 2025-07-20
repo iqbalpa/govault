@@ -22,12 +22,11 @@ var (
 
 // Flags
 var (
-	masterPass string
-	name       string
-	username   string
-	password   string
-	note       string
-	id         string
+	name     string
+	username string
+	password string
+	note     string
+	id       string
 )
 
 // CLI Commands
@@ -56,6 +55,7 @@ var (
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			initServices()
+			masterPass := promptPassword()
 			authSvc.InitMasterPass(masterPass)
 		},
 	}
@@ -83,6 +83,7 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			initServices()
 			salt := crypto.GenerateRandomSalt()
+			masterPass := promptPassword()
 			s, err := vaultSvc.CreateSecret(masterPass, name, username, password, note, salt)
 			if err != nil {
 				fmt.Println("Failed to add new secret")
@@ -113,8 +114,6 @@ func Execute() error {
 }
 
 func init() {
-	initCmd.PersistentFlags().StringVarP(&masterPass, "masterPass", "m", "", "the master password to initialize govault")
-	addCmd.PersistentFlags().StringVarP(&masterPass, "masterPass", "m", "", "the master password to initialize govault")
 	addCmd.PersistentFlags().StringVarP(&name, "name", "n", "", "the secret name")
 	addCmd.PersistentFlags().StringVarP(&username, "username", "u", "", "the secret username")
 	addCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "the password you want to store")
@@ -140,4 +139,11 @@ func initServices() {
 	// Initialize services
 	vaultSvc = service.New(*vaultRepo)
 	authSvc = service.NewAuthService(*authRepo)
+}
+
+func promptPassword() string {
+	var masterPass string
+	fmt.Print("Enter the master password: ")
+	fmt.Scan(&masterPass)
+	return masterPass
 }
