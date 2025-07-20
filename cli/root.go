@@ -6,6 +6,7 @@ import (
 	"govault/internal/repository"
 	"govault/internal/service"
 	"govault/internal/utils"
+	"os"
 
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
@@ -67,6 +68,11 @@ var (
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			initServices()
+			masterPass := promptPassword()
+			if _, err := authSvc.Login(masterPass); err != nil {
+				fmt.Println("master password is incorrect")
+				os.Exit(1)
+			}
 			res, err := vaultSvc.GetAllSecrets()
 			if err != nil {
 				fmt.Println(err)
@@ -99,6 +105,11 @@ var (
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			initServices()
+			masterPass := promptPassword()
+			if _, err := authSvc.Login(masterPass); err != nil {
+				fmt.Println("master password is incorrect")
+				os.Exit(1)
+			}
 			s, err := vaultSvc.DeleteSecretById(id)
 			if err != nil {
 				fmt.Println("Failed to delete secret")
