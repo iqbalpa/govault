@@ -27,6 +27,7 @@ var (
 	username   string
 	password   string
 	note       string
+	id         string
 )
 
 // CLI Commands
@@ -89,6 +90,21 @@ var (
 			fmt.Println("Succesfully added new secret!\n", s)
 		},
 	}
+
+	deleteCmd = &cobra.Command{
+		Use:   "delete",
+		Short: "Delete secret by id",
+		Long:  "Delete specified secret",
+		Args:  cobra.NoArgs,
+		Run: func(cmd *cobra.Command, args []string) {
+			initServices()
+			s, err := vaultSvc.DeleteSecretById(id)
+			if err != nil {
+				fmt.Println("Failed to delete secret")
+			}
+			fmt.Println("Succesfully delete secret!\n", s)
+		},
+	}
 )
 
 // Execute executes the root command.
@@ -103,11 +119,13 @@ func init() {
 	addCmd.PersistentFlags().StringVarP(&username, "username", "u", "", "the secret username")
 	addCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "the password you want to store")
 	addCmd.PersistentFlags().StringVarP(&note, "note", "", "", "additional notes")
+	deleteCmd.PersistentFlags().StringVarP(&id, "id", "i", "", "secret id to delete")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(addCmd)
+	rootCmd.AddCommand(deleteCmd)
 }
 
 func initServices() {
