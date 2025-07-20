@@ -81,6 +81,26 @@ var (
 		},
 	}
 
+	getCmd = &cobra.Command{
+		Use:   "get",
+		Short: "Get secret by id",
+		Long:  "Get specified secret",
+		Args:  cobra.NoArgs,
+		Run: func(cmd *cobra.Command, args []string) {
+			initServices()
+			masterPass := promptPassword()
+			if _, err := authSvc.Login(masterPass); err != nil {
+				fmt.Println("master password is incorrect")
+				os.Exit(1)
+			}
+			s, err := vaultSvc.GetSecretById(masterPass, id)
+			if err != nil {
+				fmt.Println("Failed to get secret")
+			}
+			fmt.Println("Succesfully retrieve secret!\n", s)
+		},
+	}
+
 	addCmd = &cobra.Command{
 		Use:   "add",
 		Short: "Add new secret",
@@ -130,12 +150,14 @@ func init() {
 	addCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "the password you want to store")
 	addCmd.PersistentFlags().StringVarP(&note, "note", "", "", "additional notes")
 	deleteCmd.PersistentFlags().StringVarP(&id, "id", "i", "", "secret id to delete")
+	getCmd.PersistentFlags().StringVarP(&id, "id", "i", "", "secret id to delete")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(deleteCmd)
+	rootCmd.AddCommand(getCmd)
 }
 
 func initServices() {
