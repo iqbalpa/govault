@@ -27,7 +27,7 @@ func init() {
 }
 
 func ConnectDb() *gorm.DB {
-	fmt.Println("Connecting to DB...")
+	// fmt.Println("Connecting to DB...")
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		host,
 		user,
@@ -39,13 +39,13 @@ func ConnectDb() *gorm.DB {
 		fmt.Println("failed to connect to db")
 		return nil
 	}
-	fmt.Println("Connected to DB successfully!")
+	// fmt.Println("Connected to DB successfully!")
 	return db
 }
 
 func MigrateDb(db *gorm.DB) {
-	fmt.Println("Running DB migrations...")
+	// fmt.Println("Running DB migrations...")
 	db.AutoMigrate(&model.Secret{})
 	db.AutoMigrate(&model.Auth{})
-	fmt.Println("DB Migrations is succeed!")
+	// fmt.Println("DB Migrations is succeed!")
 }
