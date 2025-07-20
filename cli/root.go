@@ -46,7 +46,7 @@ var (
 		Long:  "Master password initialization to use govault",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Master Password:", masterPass)
+			initServices()
 			authSvc.InitMasterPass(masterPass)
 		},
 	}
@@ -58,8 +58,6 @@ func Execute() error {
 }
 
 func init() {
-	initServices()
-
 	initCmd.PersistentFlags().StringVarP(&masterPass, "masterPass", "m", "", "the master password to initialize govault")
 
 	rootCmd.AddCommand(versionCmd)
@@ -67,12 +65,8 @@ func init() {
 }
 
 func initServices() {
-	if db != nil {
-		return // Already initialized
-	}
-
 	// Initialize database
-	db = utils.ConnectDb()
+	db := utils.ConnectDb()
 	utils.MigrateDb(db)
 
 	// Initialize repositories
