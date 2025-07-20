@@ -38,14 +38,28 @@ func (vs *VaultService) GetSecretById(masterPass, id string) (model.SecretInVaul
 }
 
 // Create a new secret
-func (vs *VaultService) CreateSecret(masterPass, name, username, password, note string, salt []byte) (model.Secret, error) {
+func (vs *VaultService) CreateSecret(masterPass, name, username, password, note string, salt []byte) (model.SecretInVault, error) {
 	ciphertext, _ := crypto.EncryptAES(masterPass, password, salt)
 	secret, _ := vs.r.CreateSecret(name, username, note, ciphertext, salt)
-	return secret, nil
+	res := model.SecretInVault{
+		ID:        secret.ID,
+		Name:      secret.Name,
+		Username:  secret.Username,
+		Note:      secret.Note,
+		CreatedAt: secret.CreatedAt,
+	}
+	return res, nil
 }
 
 // Delete a secret
-func (vs *VaultService) DeleteSecretById(id string) (model.Secret, error) {
+func (vs *VaultService) DeleteSecretById(id string) (model.SecretInVault, error) {
 	secret, _ := vs.r.DeleteSecretById(id)
-	return secret, nil
+	res := model.SecretInVault{
+		ID:        secret.ID,
+		Name:      secret.Name,
+		Username:  secret.Username,
+		Note:      secret.Note,
+		CreatedAt: secret.CreatedAt,
+	}
+	return res, nil
 }
