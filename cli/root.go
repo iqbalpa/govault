@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"govault/internal/crypto"
 	"govault/internal/repository"
 	"govault/internal/service"
 	"govault/internal/utils"
@@ -10,6 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Services
 var (
 	db        *gorm.DB
 	vaultRepo *repository.SecretRepository
@@ -18,10 +20,16 @@ var (
 	authSvc   *service.AuthService
 )
 
+// Flags
 var (
 	masterPass string
+	name       string
+	username   string
+	password   string
+	note       string
 )
 
+// CLI Commands
 var (
 	rootCmd = &cobra.Command{
 		Use:   "govault",
@@ -50,6 +58,37 @@ var (
 			authSvc.InitMasterPass(masterPass)
 		},
 	}
+
+	listCmd = &cobra.Command{
+		Use:   "list",
+		Short: "List all available secrets",
+		Long:  "List all available secrets (name and username)",
+		Args:  cobra.NoArgs,
+		Run: func(cmd *cobra.Command, args []string) {
+			initServices()
+			res, err := vaultSvc.GetAllSecrets()
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(res)
+		},
+	}
+
+	addCmd = &cobra.Command{
+		Use:   "add",
+		Short: "Add new secret",
+		Long:  "Add new secret to the govault",
+		Args:  cobra.NoArgs,
+		Run: func(cmd *cobra.Command, args []string) {
+			initServices()
+			salt := crypto.GenerateRandomSalt()
+			s, err := vaultSvc.CreateSecret(masterPass, name, username, password, note, salt)
+			if err != nil {
+				fmt.Println("Failed to add new secret")
+			}
+			fmt.Println("Succesfully added new secret!\n", s)
+		},
+	}
 )
 
 // Execute executes the root command.
@@ -59,9 +98,16 @@ func Execute() error {
 
 func init() {
 	initCmd.PersistentFlags().StringVarP(&masterPass, "masterPass", "m", "", "the master password to initialize govault")
+	addCmd.PersistentFlags().StringVarP(&masterPass, "masterPass", "m", "", "the master password to initialize govault")
+	addCmd.PersistentFlags().StringVarP(&name, "name", "n", "", "the secret name")
+	addCmd.PersistentFlags().StringVarP(&username, "username", "u", "", "the secret username")
+	addCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "the password you want to store")
+	addCmd.PersistentFlags().StringVarP(&note, "note", "", "", "additional notes")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(addCmd)
 }
 
 func initServices() {
