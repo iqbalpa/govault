@@ -23,13 +23,19 @@ func New(db *gorm.DB) *SecretRepository {
 
 func (sr *SecretRepository) GetAllSecrets() ([]model.Secret, error) {
 	var secrets []model.Secret
-	sr.db.Select(IdKey, NameKey).Find(&secrets)
+	res := sr.db.Select(IdKey, NameKey).Find(&secrets)
+	if res.Error != nil {
+		return []model.Secret{}, res.Error
+	}
 	return secrets, nil
 }
 
 func (sr *SecretRepository) GetSecretById(id string) (model.Secret, error) {
 	var secret model.Secret
-	sr.db.Where("id = ?", id).First(&secret)
+	res := sr.db.Where("id = ?", id).First(&secret)
+	if res.Error != nil {
+		return model.Secret{}, res.Error
+	}
 	return secret, nil
 }
 
@@ -41,13 +47,19 @@ func (sr *SecretRepository) CreateSecret(name, username, note string, ciphertext
 		Ciphertext: ciphertext,
 		Salt:       salt,
 	}
-	sr.db.Create(&secret)
+	res := sr.db.Create(&secret)
+	if res.Error != nil {
+		return model.Secret{}, res.Error
+	}
 	return secret, nil
 }
 
 func (sr *SecretRepository) DeleteSecretById(id string) (model.Secret, error) {
 	var secret model.Secret
 	sr.db.Where("id = ?", id).First(&secret)
-	sr.db.Delete(&secret)
+	res := sr.db.Delete(&secret)
+	if res.Error != nil {
+		return model.Secret{}, res.Error
+	}
 	return secret, nil
 }
