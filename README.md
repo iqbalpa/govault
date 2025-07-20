@@ -43,6 +43,8 @@ These instructions will get you a copy of the project up and running on your loc
     You can build the binary to run the CLI directly.
     ```sh
     go build -o govault cmd/main.go
+    # or 
+    bash build.sh
     ```
 
 5.  **Run the application:**
