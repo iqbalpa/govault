@@ -1,0 +1,1 @@
+go build -o govault cmd/main.go
