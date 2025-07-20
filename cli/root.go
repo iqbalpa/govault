@@ -110,6 +110,10 @@ var (
 			initServices()
 			salt := crypto.GenerateRandomSalt()
 			masterPass := promptPassword()
+			if _, err := authSvc.Login(masterPass); err != nil {
+				fmt.Println("master password is incorrect")
+				os.Exit(1)
+			}
 			s, err := vaultSvc.CreateSecret(masterPass, name, username, password, note, salt)
 			if err != nil {
 				fmt.Println("Failed to add new secret")
