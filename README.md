@@ -92,6 +92,14 @@ Delete a secret by its ID. You can get the ID from the `list` command.
 go run cmd/main.go delete --id <secret-id>
 ```
 
+#### `export`
+
+Export the secrets into JSON file.
+
+```sh
+go run cmd/main.go export --filepath <filepath>
+```
+
 ### Using the built binary
 
 If you have built the binary, you can use it directly:
@@ -118,6 +126,12 @@ If you have built the binary, you can use it directly:
 
 ```sh
 ./govault delete --id <secret-id>
+```
+
+#### `export`
+
+```sh
+./govault export --filepath <filepath>
 ```
 
 ## Tech Stack
