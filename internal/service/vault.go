@@ -1,9 +1,13 @@
 package service
 
 import (
+	"encoding/json"
+	"fmt"
 	"govault/internal/crypto"
 	"govault/internal/model"
 	"govault/internal/repository"
+	"os"
+	"path"
 )
 
 type VaultService struct {
@@ -74,4 +78,25 @@ func (vs *VaultService) DeleteSecretById(id string) (model.SecretInVault, error)
 		CreatedAt: secret.CreatedAt,
 	}
 	return res, nil
+}
+
+// Export secrets to JSON
+func (vs *VaultService) ExportAllSecrets(fpath string) error {
+	secrets, err := vs.r.GetAllSecrets()
+	if err != nil {
+		return err
+	}
+
+	j, _ := json.Marshal(secrets)
+	absPath, _ := os.Getwd()
+	f, _ := os.Create(path.Join(absPath, fpath))
+	_, err = f.Write(j)
+	defer f.Close()
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
 }

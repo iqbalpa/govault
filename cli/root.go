@@ -29,6 +29,7 @@ var (
 	password string
 	note     string
 	id       string
+	fpath    string
 )
 
 // CLI Commands
@@ -149,6 +150,27 @@ var (
 			utils.PPrint.Println(s)
 		},
 	}
+
+	exportCmd = &cobra.Command{
+		Use:   "export",
+		Short: "Export all secrets",
+		Long:  "Export all secrets in govault into json file",
+		Args:  cobra.NoArgs,
+		Run: func(cmd *cobra.Command, args []string) {
+			initServices()
+			masterPass := promptPassword()
+			if _, err := authSvc.Login(masterPass); err != nil {
+				fmt.Println("master password is incorrect")
+				os.Exit(1)
+			}
+			err := vaultSvc.ExportAllSecrets(fpath)
+			if err != nil {
+				fmt.Println("Failed to export secrets")
+				os.Exit(1)
+			}
+			fmt.Println("Succesfully export secret!")
+		},
+	}
 )
 
 // Execute executes the root command.
@@ -162,7 +184,8 @@ func init() {
 	addCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "the password you want to store")
 	addCmd.PersistentFlags().StringVarP(&note, "note", "", "", "additional notes")
 	deleteCmd.PersistentFlags().StringVarP(&id, "id", "i", "", "secret id to delete")
-	getCmd.PersistentFlags().StringVarP(&id, "id", "i", "", "secret id to delete")
+	getCmd.PersistentFlags().StringVarP(&id, "id", "i", "", "secret id to get")
+	exportCmd.PersistentFlags().StringVarP(&fpath, "filepath", "f", "/secrets.json", "path to export the secrets")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(initCmd)
@@ -170,6 +193,7 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(exportCmd)
 }
 
 func initServices() {
