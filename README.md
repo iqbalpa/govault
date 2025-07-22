@@ -141,3 +141,39 @@ If you have built the binary, you can use it directly:
 *   [GORM](https://gorm.io/) - The fantastic ORM library for Go
 *   [golang-jwt](https://github.com/golang-jwt/jwt) - For handling JSON Web Tokens
 *   [go-crypto](https://golang.org/x/crypto) - For encryption and hashing
+
+## Architecture
+
+GoVault follows a layered architecture that separates concerns and promotes modularity. The main layers are:
+
+-   **`cmd`**: The entry point of the application, responsible for parsing command-line arguments and initializing the CLI.
+-   **`cli`**: Contains the core CLI logic, including command definitions and flags. It interacts with the `service` layer to execute user commands.
+-   **`service`**: Implements the business logic of the application. It coordinates the interaction between the `repository` and `crypto` layers.
+-   **`repository`**: Handles data access and persistence. It interacts with the PostgreSQL database using the GORM library.
+-   **`model`**: Defines the data structures used throughout the application, such as `Secret` and `User`.
+-   **`crypto`**: Manages all cryptographic operations, including encryption, decryption, and key derivation.
+-   **`utils`**: Provides utility functions for tasks like password hashing, configuration management, and database connections.
+
+This layered approach makes the codebase easier to maintain, test, and extend.
+
+## Password Manager Design
+
+The password manager is designed with security as the top priority. Here’s a breakdown of the key design principles:
+
+### Master Password
+
+-   **Single Point of Entry**: The entire vault is protected by a single master password. This password is used to encrypt and decrypt all your secrets.
+-   **Hashing**: The master password is not stored directly. Instead, it is hashed using `bcrypt`.
+
+### Encryption
+
+-   **AES-GCM**: All secrets are encrypted using AES-256 in Galois/Counter Mode (GCM). AES is a widely trusted encryption standard, and GCM provides both confidentiality and authenticity.
+-   **Key Derivation**: The encryption key is derived from the master password using `scrypt`. This adds an extra layer of security by making it computationally expensive to generate the key.
+-   **Unique Salts**: Each secret is encrypted with a unique salt. This ensures that even if two secrets have the same password, their encrypted values will be different.
+
+### Data Storage
+
+-   **Encrypted at Rest**: All secrets are stored in the database in their encrypted form. This means that even if an attacker gains access to the database, they will not be able to read your secrets without the master password.
+-   **No Plaintext**: The master password and unencrypted secrets are never stored on disk. They are only held in memory during the execution of a command.
+
+This design ensures that your secrets are protected at all times, both in transit and at rest.
